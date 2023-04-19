@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/ai_tutor/static/css/main.a6cdd5ac.css",
-    "main.js": "/ai_tutor/static/js/main.a7a21e79.js",
+    "main.css": "/ai_tutor/static/css/main.b0d9ad17.css",
+    "main.js": "/ai_tutor/static/js/main.717cec22.js",
     "static/js/531.e9992cee.chunk.js": "/ai_tutor/static/js/531.e9992cee.chunk.js",
     "static/js/586.260a8672.chunk.js": "/ai_tutor/static/js/586.260a8672.chunk.js",
     "static/js/193.17d36425.chunk.js": "/ai_tutor/static/js/193.17d36425.chunk.js",
@@ -9,8 +9,8 @@
     "static/js/875.81d2abb0.chunk.js": "/ai_tutor/static/js/875.81d2abb0.chunk.js",
     "static/js/787.758fc2d8.chunk.js": "/ai_tutor/static/js/787.758fc2d8.chunk.js",
     "index.html": "/ai_tutor/index.html",
-    "main.a6cdd5ac.css.map": "/ai_tutor/static/css/main.a6cdd5ac.css.map",
-    "main.a7a21e79.js.map": "/ai_tutor/static/js/main.a7a21e79.js.map",
+    "main.b0d9ad17.css.map": "/ai_tutor/static/css/main.b0d9ad17.css.map",
+    "main.717cec22.js.map": "/ai_tutor/static/js/main.717cec22.js.map",
     "531.e9992cee.chunk.js.map": "/ai_tutor/static/js/531.e9992cee.chunk.js.map",
     "586.260a8672.chunk.js.map": "/ai_tutor/static/js/586.260a8672.chunk.js.map",
     "193.17d36425.chunk.js.map": "/ai_tutor/static/js/193.17d36425.chunk.js.map",
@@ -19,7 +19,7 @@
     "787.758fc2d8.chunk.js.map": "/ai_tutor/static/js/787.758fc2d8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a6cdd5ac.css",
-    "static/js/main.a7a21e79.js"
+    "static/css/main.b0d9ad17.css",
+    "static/js/main.717cec22.js"
   ]
 }
