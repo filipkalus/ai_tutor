@@ -69,7 +69,7 @@ const App = () => {
   return (
     <div className="App">
       <div className="App-content">
-
+        {process.env.REACT_APP_OPENAI_API_TOKEN}
         <div className="info-container">
           <div className="info-tooltip">
             <img
