@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useWhisper } from '@chengsokdara/use-whisper';
-import { Configuration, OpenAIApi } from 'openai';
 import './App.css';
+import axios from 'axios';
 
 // NOTE As the description in OpenAI page, text-davinci-003 is recognized as GPT 3.5
 // https://learn.microsoft.com/en-us/answers/questions/1165570/is-text-davinci-003-gpt-3-0-and-different-from-cha
@@ -9,72 +9,52 @@ import './App.css';
 // NOTE open ai error handling: https://github.com/openai/openai-node
 // const response = await openai.createChatCompletion(completeOptions);
 
-async function sendToChatGPT(openai, text) {
-  const inputs = [
-    { role: "system", content: "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let's start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors." },
-    { role: "user", content: text },
-  ];
+const onTranscribe = async (blob) => {
+  try {
+    const base64 = await new Promise (
+      (resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(blob)
+      }
+    )
 
-  const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: inputs,
-    max_tokens: 100,
-    temperature: 0.7,
-    temperature: 0,
-    max_tokens: 100,
-    top_p: 1,
-    frequency_penalty: 0.0,
-    presence_penalty: 0.0,
-  });
+    const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/transcript`, {'file': base64})
+    const { text } = response.data
 
-  // NOTE open ai error handling: https://github.com/openai/openai-node
-  // const response = await openai.createChatCompletion(completeOptions);
-  console.log(response);
+    return {
+      blob, text
+    }
 
-  return response.data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const App = () => {
   const {
     recording,
-    speaking,
-    transcribing,
     transcript,
-    pauseRecording,
     startRecording,
     stopRecording,
   } = useWhisper({
-    apiKey: process.env.REACT_APP_OPENAI_API_TOKEN,
-    streaming: true,
-    timeSlice: 1_000, // 1 second
-    whisperConfig: {
-      language: 'en',
-    },
+    onTranscribe: onTranscribe,
+    streaming: false,
   })
-
-
-  const configuration = new Configuration({
-    apiKey: process.env.REACT_APP_OPENAI_API_TOKEN,
-  });
-  const openai = new OpenAIApi(configuration);
-
-  const [chatGPTResponse, setChatGPTResponse] = useState('');
 
   const handleStopRecording = async () => {
     stopRecording();
-    const response = await sendToChatGPT(openai, transcript.text);
-    setChatGPTResponse(response);
   };
 
   return (
     <div className="App">
       <div className="App-content">
-        {process.env.REACT_APP_OPENAI_API_TOKEN}
         <div className="info-container">
           <div className="info-tooltip">
             <img
               src="https://img.icons8.com/clouds/100/null/reminders.png"
               className="info-icon"
+              alt=""
             />
             <span className="tooltiptext">
               <b>TODO</b>
@@ -111,7 +91,6 @@ const App = () => {
 
         <p>Speak and see it displayed in the box below:</p>
         <p>Transcribed Text: {transcript.text}</p>
-        <p>ChatGPT Response: {chatGPTResponse}</p>
 
       </div>
     </div>
