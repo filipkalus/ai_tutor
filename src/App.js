@@ -14,22 +14,22 @@ const App = () => {
 
   const chunks = useRef([])
   const [temp_transcript, setTempTranscript] = useState('')
-  const encoder = useRef(undefined)
-  encoder.current = new Mp3Encoder(1, 44100, 96)
+  const [chatGPT_response, setChatGPTResponse] = useState('')
 
+  const encoder = useRef(undefined)
+  
   const streamToServer = async (data) => {
     try {
-      const buffer = await data.arrayBuffer()
-      const mp3chunk = encoder.current.encodeBuffer(new Int16Array(buffer))
-      const mp3blob = new Blob([mp3chunk], { type: 'audio/mpeg' })
-      chunks.current.push(mp3blob)
-
-      const blob = new Blob(chunks.current, {
-        type: 'audio/mpeg',
-      })
-    
-      console.log(encoder.current)
       if (encoder.current) {
+        const buffer = await data.arrayBuffer()
+        const mp3chunk = encoder.current.encodeBuffer(new Int16Array(buffer))
+        const mp3blob = new Blob([mp3chunk], { type: 'audio/mpeg' })
+        chunks.current.push(mp3blob)
+
+        const blob = new Blob(chunks.current, {
+          type: 'audio/mpeg',
+        })
+    
         const base64 = await new Promise(
           (resolve) => {
             const reader = new FileReader()
@@ -47,7 +47,7 @@ const App = () => {
         }
       }
     } catch (error) {
-      setTempTranscript('fail')
+      setTempTranscript('failed')
       console.error(error);
     }
   }
@@ -70,9 +70,40 @@ const App = () => {
       }
 
     } catch (error) {
-      console.error('asdasdas');
+      console.error(error);
     }
   }
+
+  const sendToChatGPT = async (message) => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/chatGPT`, { 'message': message })
+      const { text } = response.data
+      console.log(text)
+      setChatGPTResponse(text)
+
+    } catch (error) {
+      console.error(error);
+      setChatGPTResponse('error')
+    }
+  };
+
+  const handleStartRecording = async () => {
+    setTempTranscript('')
+    setChatGPTResponse('')
+    
+    encoder.current = new Mp3Encoder(1, 44100, 96)
+    chunks.current = []
+    startRecording();
+  };
+
+  const handleStopRecording = async () => {
+    stopRecording();
+    encoder.current.flush()
+    encoder.current = undefined
+    
+    // send to chatGPT
+    await sendToChatGPT(temp_transcript)
+  };
 
   const {
     recording,
@@ -85,10 +116,6 @@ const App = () => {
     streaming: true,
     timeSlice: 2_000,
   })
-
-  const handleStopRecording = async () => {
-    stopRecording();
-  };
 
   return (
     <div className="App">
@@ -130,11 +157,12 @@ const App = () => {
 
         <h1>English AI Tutor</h1>
         <div className="avatar"></div>
-        <button onClick={() => startRecording()} disabled={recording}>Start Recording</button>
+        <button onClick={handleStartRecording} disabled={recording}>Start Recording</button>
         <button onClick={handleStopRecording} disabled={!recording}>Stop Recording</button>
 
         <p>Speak and see it displayed in the box below:</p>
         <p>Transcribed Text: {temp_transcript}</p>
+        <p>Chat GPT Response: {chatGPT_response}</p>
 
       </div>
     </div>
