@@ -2,11 +2,21 @@ const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
 const fs = require('fs')
+var bodyParser = require('body-parser');
 
 require('dotenv').config()
 const app = express()
 app.use(cors())
-app.use(express.json())
+app.use(bodyParser.json({
+  limit: '20mb'
+}));
+
+app.use(bodyParser.urlencoded({
+  limit: '20mb',
+  parameterLimit: 100000,
+  extended: true 
+}));
+
 
 const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_TOKEN;
 const WHISPER_API_URL = 'https://api.openai.com/v1/audio/transcriptions';

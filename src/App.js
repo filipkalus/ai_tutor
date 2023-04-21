@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useWhisper } from '@chengsokdara/use-whisper';
 import './App.css';
 import axios from 'axios';
+import { Mp3Encoder } from 'lamejs';
 
 // NOTE As the description in OpenAI page, text-davinci-003 is recognized as GPT 3.5
 // https://learn.microsoft.com/en-us/answers/questions/1165570/is-text-davinci-003-gpt-3-0-and-different-from-cha
@@ -9,29 +10,70 @@ import axios from 'axios';
 // NOTE open ai error handling: https://github.com/openai/openai-node
 // const response = await openai.createChatCompletion(completeOptions);
 
-const onTranscribe = async (blob) => {
-  try {
-    const base64 = await new Promise (
-      (resolve) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
-        reader.readAsDataURL(blob)
-      }
-    )
-
-    const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/transcript`, {'file': base64})
-    const { text } = response.data
-
-    return {
-      blob, text
-    }
-
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 const App = () => {
+
+  const chunks = useRef([])
+  const [temp_transcript, setTempTranscript] = useState('')
+  const encoder = useRef(undefined)
+  encoder.current = new Mp3Encoder(1, 44100, 96)
+
+  const streamToServer = async (data) => {
+    try {
+      const buffer = await data.arrayBuffer()
+      const mp3chunk = encoder.current.encodeBuffer(new Int16Array(buffer))
+      const mp3blob = new Blob([mp3chunk], { type: 'audio/mpeg' })
+      chunks.current.push(mp3blob)
+
+      const blob = new Blob(chunks.current, {
+        type: 'audio/mpeg',
+      })
+    
+      console.log(encoder.current)
+      if (encoder.current) {
+        const base64 = await new Promise(
+          (resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result)
+            reader.readAsDataURL(blob)
+          }
+        )
+
+        const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/transcript`, { 'file': base64 })
+        const { text } = response.data
+        setTempTranscript(text)
+
+        return {
+          blob, text
+        }
+      }
+    } catch (error) {
+      setTempTranscript('fail')
+      console.error(error);
+    }
+  }
+
+  const onTranscribe = async (blob) => {
+    try {
+      const base64 = await new Promise(
+        (resolve) => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result)
+          reader.readAsDataURL(blob)
+        }
+      )
+
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/transcript`, { 'file': base64 })
+      const { text } = response.data
+
+      return {
+        blob, text
+      }
+
+    } catch (error) {
+      console.error('asdasdas');
+    }
+  }
+
   const {
     recording,
     transcript,
@@ -39,7 +81,9 @@ const App = () => {
     stopRecording,
   } = useWhisper({
     onTranscribe: onTranscribe,
-    streaming: false,
+    onDataAvailable: streamToServer,
+    streaming: true,
+    timeSlice: 2_000,
   })
 
   const handleStopRecording = async () => {
@@ -90,7 +134,7 @@ const App = () => {
         <button onClick={handleStopRecording} disabled={!recording}>Stop Recording</button>
 
         <p>Speak and see it displayed in the box below:</p>
-        <p>Transcribed Text: {transcript.text}</p>
+        <p>Transcribed Text: {temp_transcript}</p>
 
       </div>
     </div>
