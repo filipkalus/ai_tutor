@@ -1,25 +1,23 @@
 {
   "files": {
     "main.css": "/ai_tutor/static/css/main.b0d9ad17.css",
-    "main.js": "/ai_tutor/static/js/main.717cec22.js",
+    "main.js": "/ai_tutor/static/js/main.070c20f2.js",
     "static/js/531.e9992cee.chunk.js": "/ai_tutor/static/js/531.e9992cee.chunk.js",
-    "static/js/586.260a8672.chunk.js": "/ai_tutor/static/js/586.260a8672.chunk.js",
     "static/js/193.17d36425.chunk.js": "/ai_tutor/static/js/193.17d36425.chunk.js",
-    "static/js/213.da4d8239.chunk.js": "/ai_tutor/static/js/213.da4d8239.chunk.js",
-    "static/js/875.81d2abb0.chunk.js": "/ai_tutor/static/js/875.81d2abb0.chunk.js",
+    "static/js/213.76510f5c.chunk.js": "/ai_tutor/static/js/213.76510f5c.chunk.js",
+    "static/js/477.1de79426.chunk.js": "/ai_tutor/static/js/477.1de79426.chunk.js",
     "static/js/787.758fc2d8.chunk.js": "/ai_tutor/static/js/787.758fc2d8.chunk.js",
     "index.html": "/ai_tutor/index.html",
     "main.b0d9ad17.css.map": "/ai_tutor/static/css/main.b0d9ad17.css.map",
-    "main.717cec22.js.map": "/ai_tutor/static/js/main.717cec22.js.map",
+    "main.070c20f2.js.map": "/ai_tutor/static/js/main.070c20f2.js.map",
     "531.e9992cee.chunk.js.map": "/ai_tutor/static/js/531.e9992cee.chunk.js.map",
-    "586.260a8672.chunk.js.map": "/ai_tutor/static/js/586.260a8672.chunk.js.map",
     "193.17d36425.chunk.js.map": "/ai_tutor/static/js/193.17d36425.chunk.js.map",
-    "213.da4d8239.chunk.js.map": "/ai_tutor/static/js/213.da4d8239.chunk.js.map",
-    "875.81d2abb0.chunk.js.map": "/ai_tutor/static/js/875.81d2abb0.chunk.js.map",
+    "213.76510f5c.chunk.js.map": "/ai_tutor/static/js/213.76510f5c.chunk.js.map",
+    "477.1de79426.chunk.js.map": "/ai_tutor/static/js/477.1de79426.chunk.js.map",
     "787.758fc2d8.chunk.js.map": "/ai_tutor/static/js/787.758fc2d8.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b0d9ad17.css",
-    "static/js/main.717cec22.js"
+    "static/js/main.070c20f2.js"
   ]
 }
