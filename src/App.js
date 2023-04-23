@@ -62,7 +62,7 @@ const App = () => {
         }
       )
 
-      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/transcript`, { 'file': base64 })
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING_LOCAL}/transcript`, { 'file': base64 })
       const { text } = response.data
 
       return {
@@ -74,16 +74,21 @@ const App = () => {
     }
   }
 
-  const sendToChatGPT = async (message) => {
+  const ping = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING}/chatGPT`, { 'message': message })
-      const { text } = response.data
-      console.log(text)
-      setChatGPTResponse(text)
-
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING_PROD}/ping`)
+      console.error(response.data);
     } catch (error) {
       console.error(error);
-      setChatGPTResponse('error')
+    }
+  };
+
+  const sendToChatGPT = async (message) => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_CONNECTION_STRING_LOCAL}/chatGPT`, { 'message': message })
+      return response.data
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -91,30 +96,38 @@ const App = () => {
     setTempTranscript('')
     setChatGPTResponse('')
     
-    encoder.current = new Mp3Encoder(1, 44100, 96)
-    chunks.current = []
+    // encoder.current = new Mp3Encoder(1, 44100, 96)
+    // chunks.current = []
     startRecording();
   };
 
   const handleStopRecording = async () => {
     stopRecording();
-    encoder.current.flush()
-    encoder.current = undefined
+    // encoder.current.flush()
+    // encoder.current = undefined
     
     // send to chatGPT
-    await sendToChatGPT(temp_transcript)
+    try {
+      const text = await sendToChatGPT(transcript.text)
+      setChatGPTResponse(text)
+    } catch (error) {
+      setChatGPTResponse('error')
+    }
   };
 
   const {
     recording,
+    speaking,
+    transcribing,
     transcript,
+    pauseRecording,
     startRecording,
     stopRecording,
   } = useWhisper({
     onTranscribe: onTranscribe,
-    onDataAvailable: streamToServer,
-    streaming: true,
-    timeSlice: 2_000,
+    // onDataAvailable: streamToServer,
+    // streaming: true,
+    // timeSlice: 2_000,
   })
 
   return (
@@ -159,9 +172,11 @@ const App = () => {
         <div className="avatar"></div>
         <button onClick={handleStartRecording} disabled={recording}>Start Recording</button>
         <button onClick={handleStopRecording} disabled={!recording}>Stop Recording</button>
+        
+        <button onClick={ping}>Ping</button>
 
         <p>Speak and see it displayed in the box below:</p>
-        <p>Transcribed Text: {temp_transcript}</p>
+        <p>Transcribed Text: {transcript.text}</p>
         <p>Chat GPT Response: {chatGPT_response}</p>
 
       </div>

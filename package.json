@@ -1,7 +1,7 @@
 {
   "name": "ai_tutor",
   "version": "0.1.0",
-  "homepage": "https://gitname.github.io/ai_tutor",
+  "homepage": "https://filipkalus.github.io/ai_tutor",
   "private": true,
   "dependencies": {
     "@chengsokdara/use-whisper": "^0.2.0",

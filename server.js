@@ -21,6 +21,15 @@ const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_TOKEN;
 const WHISPER_API_URL = 'https://api.openai.com/v1/audio/transcriptions';
 const CHAT_GPT_API_URL = 'https://api.openai.com/v1/chat/completions';
 
+app.post('/ping', async (req, res) => {
+  try {
+    res.json('hi');
+  } catch (error) {
+    console.error(error);
+    res.json(error)
+  }
+});
+
 app.post('/chatGPT', async (req, res) => {
   try {
     const body = {
